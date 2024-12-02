@@ -1,0 +1,118 @@
+import datetime
+
+class Disaster:
+    def __init__(self, disaster_type, location, severity, description):
+        self.disaster_type = disaster_type
+        self.location = location
+        self.severity = severity
+        self.description = description
+        self.timestamp = datetime.datetime.now()
+        self.status = "Reported"
+        
+    def update_status(self, new_status):
+        self.status = new_status
+        print(f"Disaster status updated to: {new_status}")
+        
+    def display_info(self):
+        print(f"Disaster Type: {self.disaster_type}")
+        print(f"Location: {self.location}")
+        print(f"Severity: {self.severity}")
+        print(f"Description: {self.description}")
+        print(f"Timestamp: {self.timestamp}")
+        print(f"Status: {self.status}")
+        
+class Resource:
+    def __init__(self, resource_type, quantity):
+        self.resource_type = resource_type
+        self.quantity = quantity
+        self.status = "Available"
+    
+    def allocate(self, quantity):
+        if self.quantity >= quantity:
+            self.quantity -= quantity
+            print(f"{quantity} units of {self.resource_type} allocated.")
+        else:
+            print(f"Insufficient {self.resource_type}.")
+    
+    def display_info(self):
+        print(f"Resource Type: {self.resource_type}")
+        print(f"Quantity Available: {self.quantity}")
+        print(f"Status: {self.status}")
+
+class AlertSystem:
+    def __init__(self):
+        self.alerts = []
+        
+    def send_alert(self, message, disaster):
+        alert_message = f"ALERT: {message} for Disaster '{disaster.disaster_type}' at {disaster.location}"
+        self.alerts.append(alert_message)
+        print(alert_message)
+        
+    def display_alerts(self):
+        print("Recent Alerts:")
+        for alert in self.alerts:
+            print(alert)
+
+class DisasterManagementSystem:
+    def __init__(self):
+        self.disasters = []
+        self.resources = []
+        self.alert_system = AlertSystem()
+        
+    def report_disaster(self, disaster_type, location, severity, description):
+        disaster = Disaster(disaster_type, location, severity, description)
+        self.disasters.append(disaster)
+        self.alert_system.send_alert(f"New disaster reported", disaster)
+        return disaster
+    
+    def add_resource(self, resource_type, quantity):
+        resource = Resource(resource_type, quantity)
+        self.resources.append(resource)
+        print(f"Added {quantity} units of {resource_type} to resources.")
+    
+    def allocate_resource(self, resource_type, quantity):
+        for resource in self.resources:
+            if resource.resource_type == resource_type:
+                resource.allocate(quantity)
+                return
+        print(f"Resource {resource_type} not found.")
+
+    def show_disasters(self):
+        print("All Reported Disasters:")
+        for disaster in self.disasters:
+            disaster.display_info()
+
+    def show_resources(self):
+        print("All Available Resources:")
+        for resource in self.resources:
+            resource.display_info()
+        
+    def show_alerts(self):
+        self.alert_system.display_alerts()
+
+# Simulating a Disaster Management System
+if __name__ == "__main__":
+    dms = DisasterManagementSystem()
+    
+    # Reporting disasters
+    earthquake = dms.report_disaster("Earthquake", "California", "High", "Severe damage to buildings and roads")
+    flood = dms.report_disaster("Flood", "Florida", "Medium", "Flooding in residential areas")
+
+    # Adding resources
+    dms.add_resource("First Aid Kit", 100)
+    dms.add_resource("Rescue Team", 50)
+    
+    # Allocating resources
+    dms.allocate_resource("First Aid Kit", 20)
+    dms.allocate_resource("Rescue Team", 10)
+    
+    # Showing all disasters and resources
+    dms.show_disasters()
+    dms.show_resources()
+    
+    # Showing alerts
+    dms.show_alerts()
+    
+    # Updating disaster status
+    earthquake.update_status("In Progress")
+    flood.update_status("Resolved")
